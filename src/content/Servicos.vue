@@ -4,12 +4,12 @@
   <a class="fixo button is-inverted is-large is-info is-loading" v-show="isLoading">Loading</a>
   <div>
     <h1 class="title">{{title}}</h1>
-    <div class="columns">
-      <div class="column is-1">
-        <a class="button" v-link="{ path: '/' }">Voltar</a>
+    <div class="columns is-mobile is-2-tablet is-1-desktop">
+      <div class="column is-6-mobile">
+        <router-link class="button" to="/">Voltar</router-link>
       </div>
 
-      <div class="column is-1">
+      <div class="column is-6-mobile is-2-tablet is-1-desktop">
         <a class="button is-info" @click.prevent="showModalSvc=true">Novo Serviço</a>
       </div>
     </div>
@@ -26,10 +26,10 @@
             </thead>
             <tbody>
               <tr>
-                <td v-link="{ path: '/' }">8</td>
-                <td><a>{{data}}</a></td>
-                <td>{{data}}</td>
-                <td>PRATA</td>
+                <td></td>
+                <td><a></a></td>
+                <td></td>
+                <td></td>
                 <td class="is-icon">
                   <a class="button is-danger is-inverted" @click.prevent="removerCompromisso(compromisso)">
                     <i class="fa fa-trash"></i>
@@ -62,8 +62,8 @@
               <label class="label">Tipo de Serviço</label>
               <div class="select">
                   <select v-model="servico.idTipoServico">
-                      <option v-for="plataforma in plataformas">
-                        {{ plataforma.text }}
+                      <option v-for="servico in servicos" :value="servico.idTipoServico">
+                        {{ servico.nome }}
                       </option>
                   </select>
               </div>
@@ -120,13 +120,13 @@
         </header>
         <section class="modal-card-body">
             <p class="control">
-                <input class="input" v-model="selected.titulo">
+                <input class="input" v-model="tipo">
             </p>  
         </section>
           
         <footer class="modal-card-foot">
           <a class="button is-danger" @click.prevent="showModalTipo=false">Cancelar</a>
-          <a class="button is-success" @click.prevent="salvarCompromisso">Salvar</a>
+          <a class="button is-success" @click.prevent="salvarTipo">Salvar</a>
         </footer>
       </div>
     </div>
@@ -138,8 +138,8 @@
   import axios from 'axios'
   //import myDatepicker from 'vue-datepicker'
   //import {Money} from 'v-money'
-  import data from '../dados.js'
-  const servico = data.servico
+  import s from '../dados.js'
+  const servico = s.servico
     
   let moment = require('moment');
   require("moment/min/locales.min");
@@ -155,12 +155,13 @@
         title: 'Serviços',
         servicos: [],
         servico,
-        selected: {},
         showModalTipo: false,
         showModalSvc: false,
         currentTime: moment().format('L'),
+        tipo: '',
         tipos: [],
         errors: [],
+        
           
         // datapicker
         startTime: {
@@ -238,105 +239,92 @@
         //Money
     },*/
     methods: {  
-      validar() {
-        if (this.selected.tipo==null || this.selected.tipo=='') {
-          swal(
-            'Oopa...',
-            'Por favor, preencha o tipo do compromisso!',
-            'error'
-          )
-          this.selected.tipo.focus();
-          return false
-        }
-        if (this.selected.status==null || this.selected.status=='') {
-          swal(
-            'Por favor, preencha o status!',
-            'Ahh vamos lá, vamos fazer o serviço direito!',
-            'error'
-          )
-          this.selected.status.focus();
-          return false
-        }
-        if (this.selected.numPrioridade==null || this.selected.numPrioridade=='') {
-          swal(
-            'Por favor, preencha a prioridade. É imprescindível!',
-            'Se não preencher a prioridade, este compromisso não pode ser tratado da forma adequada',
-            'error'
-          )
-          this.selected.numPrioridade.focus();
-          return false
-        }
+      obterCarros(){
+        axios.get(ENDPOINT + 'carros/obterCarro')
+        .then((response) => {
+            console.log(response)
+            this.carros = response.data.data
+        })
+        .catch((err) => { 
+            console.error(err); 
+        });
       },
-      selectTipo(){
+      obterMarcas(){
+        axios.get(ENDPOINT + 'tipos/obterMarcas')
+        .then((response) => {
+            console.log(response)
+            this.marcas = response.data.data
+        })
+        .catch((err) => { 
+            console.error(err); 
+        });
+      },
+      obterCores(){
+        axios.get(ENDPOINT + 'tipos/obterCores')
+        .then((response) => {
+            console.log(response)
+            this.cores = response.data.data
+        })
+        .catch((err) => { 
+            console.error(err); 
+        });
+      },
+      obterDirecao(){
+        axios.get(ENDPOINT + 'tipos/obterDirecao')
+        .then((response) => {
+            console.log(response)
+            this.dirs = response.data.data
+        })
+        .catch((err) => { 
+            console.error(err); 
+        });
+      },
+      obterCombustivel(){
+        axios.get(ENDPOINT + 'tipos/obterCombustivel')
+        .then((response) => {
+            console.log(response)
+            this.combs = response.data.data
+        })
+        .catch((err) => { 
+            console.error(err); 
+        });
+      },
+      obterServicos(){
         axios.get(ENDPOINT + 'tipos/obterServicos')
-        .then(response => {
-          // JSON responses are automatically parsed.
-          this.tipos = response.data
-          console.log()
+        .then((response) => {
+            console.log(response)
+            this.tipos = response.data.data
         })
-        .catch(e => {
-          this.errors.push(e)
-        })
+        .catch((err) => { 
+            console.error(err); 
+        });
       },
-      salvar(){
+      salvarServico(){
+        axios(ENDPOINT + 'tipos/insertServico', this.servico)
+        .then((response) => {
+            console.log(response)
+            this.showModalNew = false
+        })
+        .catch((err) => {
+            this.showModalNew = false
+            console.error(err);
+        });
+      },
+      salvarTipo(){
         axios.post(ENDPOINT + 'tipos/insertServico', {
-            idTipoServico: 1,
-            Valor: 1.00,
-            DataVcto: new Date(),
-            DataPgto: new Date(),
+            nome: this.tipo,
             IdUsuario: 1
-
         })
-        .then(response => {
-          // JSON responses are automatically parsed.
-          this.tipos = response.data
-          console.log()
+        .then((response) => {
+            console.log(response)
+            this.showModalNew = false
         })
-        .catch(e => {
-          this.errors.push(e)
-        })
+        .catch((err) => {
+            this.showModalNew = false
+            console.error(err);
+        });
       },
-      onChangePage(page){
-        this.page = page
-        this.loadCompromissos()
-      },
-      showLoading(){
-        this.isLoading=true;
-      },
-      hideLoading(){
-        this.isLoading=false;
-      },
-      loadCompromissos(){
-
-        let t = this
-        this.showLoading()
-
-        let start = (this.page * this.itensPerPage) - (this.itensPerPage)
-        let end = this.page * this.itensPerPage
-        let qString = "";
-
-        if (this.search){
-          qString = `&q=${this.search}`
-        }
-
-        this.$http.get(ENDPOINT + `api/comp/obterComp?${qString}`).then(
-         response=>{
-           t.compromissos = response.json()
-         },
-         error=>{
-           console.log(error)
-         }).finally(function () {
-          t.hideLoading();
-        })
-
-       },
-      searchCompromissos(){
-        this.loadCompromissos()
-      },
-      newDetalhes(){
-        this.selected={}
-        this.showModalForum = true;
-      },
+      
       newCarro(){
         this.selected={}
         this.showModalNew = true;
@@ -347,83 +335,11 @@
       newMarca(){
         this.showModalMarca = true;
       },
-      editarCompromisso(compromisso){
-        this.selected=compromisso
-        this.showModalNew = true;
-      },
-      removerCompromisso(compromisso){
-        let self = this;
-        swal({   title: `Você tem certeza que deseja apagar o "${compromisso.titulo}"?`,
-                 text: `Esta ação é irreversível!`,   
-                 type: "warning",   
-                 showCancelButton: true,   
-                 confirmButtonColor: "#DD6B55",   
-                 cancelButtonText: "Cancelar",
-                 confirmButtonText: "Sim, pode apagar!", 
-                 showLoaderOnConfirm: true,  
-                 closeOnCancel: true }).then( 
-                 function (value) {
-                     if (value === false) {
-                         return false; 
-                     }
-                      else{
-                      self.$http.delete(`/compromissos/${compromisso.id}`).then(
-                      result=>{
-                        swal(
-                            'Deletado!',
-                            'Este cadastro foi excluido!',
-                            'success'
-                        )
-                      self.loadCompromissos()
-                      })
-                    }
-                 })
-      },
-      salvarCompromisso(){
-        // this.validar()
-        if (this.selected.id!=null){  //EDITAR
-          this.$http.put(ENDPOINT + `api/comp/obterComp/${this.selected.id}`,this.selected).then(
-            response=>{
-              this.$set('selected',{})
-              this.$set('showModalNew',false)
-            },
-            error=>{
-              console.error(error)
-            }
-            ).finally(
-              this.loadCompromissos()
-            )
-          }
-          else
-          { //NOVO
-            this.$http.post(ENDPOINT + `api/comp/novoCab`,this.selected).then(
-            response=>{
-              this.$set('selected',{})
-              this.$set('showModalNew',false)
-            },
-            error=>{
-              console.error(error)
-            }
-            ).finally(
-              this.loadCompromissos()
-            )
-          }
-      },
-        
-      obsCompr(compromisso) {
-        swal({
-          title: 'Anotações sobre este compromisso',
-          type: 'info',
-          html: '<p style="font-size:20px">' + `${compromisso.obs}` + '</p>',
-          showCloseButton: true,
-          confirmButtonText:
-            '<i class="fa fa-thumbs-up"></i> Ok!',
-        })
-      },
+      
     },
     created(){
       let t = this
-      t.selectTipo()
+      t.obterServicos()
     },
   }
 </script>

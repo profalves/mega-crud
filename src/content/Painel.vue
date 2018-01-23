@@ -4,12 +4,11 @@
   <a class="fixo button is-inverted is-large is-info is-loading" v-show="isLoading">Loading</a>
   <div>
     <h1 class="title">{{title}}</h1>
-    <div class="columns">
-      <div class="column is-1">
-        
+    <div class="columns is-mobile is-2-tablet is-1-desktop">
+      <div class="column is-6-mobile">
         <router-link class=button to="/">Voltar</router-link>
       </div>
-      <div class="column is-1">
+      <div class="column is-6-mobile is-2-tablet is-1-desktop">
         <a class="button is-info" @click.prevent="newCarro">Novo Produto</a>
       </div>
     </div>
@@ -25,7 +24,7 @@
                 <th>Editar</th>
                 <th>Excluir</th>
                 <th colspan="2">Serviços</th>
-                <th>Imagens</th>
+                <!--<th>Imagens</th>-->
 
             </thead>
             <tbody>
@@ -55,7 +54,7 @@
                     <i class="fa fa-plus"></i>
                   </a>
                 </td>
-                <td><a>Galeria</a></td>
+                <!--<td><a>Galeria</a></td>-->
               </tr>
             </tbody>
         </table>
@@ -240,8 +239,7 @@
           <p class="modal-card-title">Serviços</p>
           <button class="delete" @click.prevent="showModalSvc=false"></button>
         </header>
-        <section class="modal-card-body">
-            
+        <section class="modal-card-body">  
           <div class="columns"> 
             <div class="column">
               <label class="label">Tipo de Serviço</label>
@@ -288,7 +286,7 @@
         </section>
         
         <footer class="modal-card-foot">
-          <a class="button is-primary" @click.prevent="salvarCompromisso">Salvar</a>
+          <a class="button is-primary" @click.prevent="salvarServico">Salvar</a>
           <a class="button" @click.prevent="showModalNew=false">Cancelar e Retornar</a>
         </footer>
       </div>
@@ -437,27 +435,54 @@
             console.error(err); 
         });
       },
-      //Ações  
+      //Carro  
       salvarCarro(){
-        axios.post(ENDPOINT + 'carros/insert',
-            {
-                Modelo: 'Corsa',
-                IdPessoaDono: 1,
-                IdCor: 3,
-                IdMarca: 1,
-                QtdPortas: 4,
-                KM: 0,
-                Ano: '',
-                IdTipoCombustivel: 1,
-                IdTipoDirecao: 2,
-                Vidro: true,
-                Ar: true,
-                valorCusto: 1.00,
-                ValorVenda: 30000.00,
-                IdUsuario: 1,
-                Excluido: false,
-            }
-        )
+        /*axios({
+          method: 'post',
+          url: ENDPOINT + 'carros/insert',
+          data: {
+                    Modelo: 'Corsa',
+                    IdPessoaDono: 1,
+                    IdCor: 3,
+                    IdMarca: 1,
+                    QtdPortas: 4,
+                    KM: 0,
+                    Ano: '',
+                    IdTipoCombustivel: 1,
+                    IdTipoDirecao: 2,
+                    Vidro: true,
+                    Ar: true,
+                    valorCusto: 1.00,
+                    ValorVenda: 30000.00,
+                    IdUsuario: 1,
+                    Excluido: false,
+                }
+        })*/
+        fetch(ENDPOINT + 'carros/insert',
+        {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            method: "POST",
+            body: {
+                    Modelo: 'Corsa',
+                    IdPessoaDono: 1,
+                    IdCor: 3,
+                    IdMarca: 1,
+                    QtdPortas: 4,
+                    KM: 0,
+                    Ano: '',
+                    IdTipoCombustivel: 1,
+                    IdTipoDirecao: 2,
+                    Vidro: true,
+                    Ar: true,
+                    valorCusto: 1.00,
+                    ValorVenda: 30000.00,
+                    IdUsuario: 1,
+                    Excluido: false,
+                 }
+        })
         .then((response) => {
             console.log(response)
             this.showModalNew = false
@@ -484,7 +509,57 @@
         });
       },
       excluirCarro(carro){
-        axios.get(ENDPOINT + 'carros/excluir?IdCarro=' + carro.idCarro)
+        let self = this;
+        swal({   title: `Você tem certeza que deseja apagar` + carro.Modelo + `?`,
+                 text: `Esta ação é irreversível!`,   
+                 type: "warning",   
+                 showCancelButton: true,   
+                 confirmButtonColor: "#DD6B55",   
+                 cancelButtonText: "Cancelar",
+                 confirmButtonText: "Sim, pode apagar!", 
+                 showLoaderOnConfirm: true,  
+                 closeOnCancel: true }).then( 
+                 function (value) {
+                     if (value === false) {
+                         return false; 
+                     }
+                      else{
+                          axios.get(ENDPOINT + 'carros/excluir?IdCarro=' + carro.idCarro)
+                            .then((response) => {
+                                console.log(response)
+                                this.showModalNew = false
+                            })
+                            .catch((err) => {
+                                this.showModalNew = false
+                                console.error(err);
+                            });
+                      }
+                 })
+          
+      },
+      //Serviços
+      salvarServico(){
+        axios({
+          method: 'post',
+          url: ENDPOINT + 'carros/insert',
+          data: {
+                    Modelo: 'Corsa',
+                    IdPessoaDono: 1,
+                    IdCor: 3,
+                    IdMarca: 1,
+                    QtdPortas: 4,
+                    KM: 0,
+                    Ano: '',
+                    IdTipoCombustivel: 1,
+                    IdTipoDirecao: 2,
+                    Vidro: true,
+                    Ar: true,
+                    valorCusto: 1.00,
+                    ValorVenda: 30000.00,
+                    IdUsuario: 1,
+                    Excluido: false,
+                }
+        })
         .then((response) => {
             console.log(response)
             this.showModalNew = false
@@ -493,9 +568,8 @@
             this.showModalNew = false
             console.error(err);
         });
-
-          
       },
+      
       validar() {
         if (this.selected.tipo==null || this.selected.tipo=='') {
           swal(
@@ -553,75 +627,7 @@
       newMarca(){
         this.showModalMarca = true;
       },
-      removerCompromisso(carro){
-        let self = this;
-        swal({   title: `Você tem certeza que deseja apagar?`,
-                 text: `Esta ação é irreversível!`,   
-                 type: "warning",   
-                 showCancelButton: true,   
-                 confirmButtonColor: "#DD6B55",   
-                 cancelButtonText: "Cancelar",
-                 confirmButtonText: "Sim, pode apagar!", 
-                 showLoaderOnConfirm: true,  
-                 closeOnCancel: true }).then( 
-                 function (value) {
-                     if (value === false) {
-                         return false; 
-                     }
-                      else{
-                      self.$http.delete(`/compromissos/${compromisso.id}`).then(
-                      result=>{
-                        swal(
-                            'Deletado!',
-                            'Este cadastro foi excluido!',
-                            'success'
-                        )
-                      self.loadCompromissos()
-                      })
-                    }
-                 })
-      },
-      salvarCompromisso(){
-        // this.validar()
-        if (this.selected.id!=null){  //EDITAR
-          this.$http.put(ENDPOINT + `api/comp/obterComp/${this.selected.id}`,this.selected).then(
-            response=>{
-              this.$set('selected',{})
-              this.$set('showModalNew',false)
-            },
-            error=>{
-              console.error(error)
-            }
-            ).finally(
-              this.loadCompromissos()
-            )
-          }
-          else
-          { //NOVO
-            this.$http.post(ENDPOINT + `api/comp/novoCab`,this.selected).then(
-            response=>{
-              this.$set('selected',{})
-              this.$set('showModalNew',false)
-            },
-            error=>{
-              console.error(error)
-            }
-            ).finally(
-              this.loadCompromissos()
-            )
-          }
-      },
-        
-      obsCompr(compromisso) {
-        swal({
-          title: 'Anotações sobre este compromisso',
-          type: 'info',
-          html: '<p style="font-size:20px">' + `${compromisso.obs}` + '</p>',
-          showCloseButton: true,
-          confirmButtonText:
-            '<i class="fa fa-thumbs-up"></i> Ok!',
-        })
-      },
+      
     },
     created(){
       let t = this
