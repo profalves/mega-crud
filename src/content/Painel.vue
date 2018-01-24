@@ -1,7 +1,7 @@
 ﻿<template>
 <div id="painel">
   <app-header></app-header>
-  <a class="fixo button is-inverted is-large is-info is-loading" v-show="isLoading">Loading</a>
+  <a class="fixo button is-large is-info is-loading" v-show="isLoading">Loading</a>
   <div>
     <h1 class="title">{{title}}</h1>
     <div class="columns is-mobile">
@@ -371,7 +371,7 @@
     methods: {
       //listar
       listarCarros(){
-        axios.get(ENDPOINT + 'carros/obteranuncios' + this.search)
+        axios.get(ENDPOINT + 'carros/obteranuncios')
         .then((response) => {
             //console.log(response)
             this.carros = response.data.data
@@ -472,7 +472,7 @@
         axios.post(ENDPOINT + 'carros/update', this.carro)
         .then((response) => {
             console.log(response)
-            this.this.showModalNew = false
+            this.showModalNew = false
             this.hideLoading()
             this.listarCarros()
         })
@@ -497,9 +497,14 @@
                   return false; 
                  }
                  else{
-                  axios.post(ENDPOINT + 'carros/excluir?IdCarro=' + carro.idCarro)
+                  axios.get(ENDPOINT + 'carros/excluir?IdCarro=' + carro.idCarro)
                     .then((response) => {
                         console.log(response)
+                        swal({
+                          title: 'Este carro foi excluido com sucesso!',
+                          text: "Clique em OK para continuar!",
+                          icon: "success",
+                        });
                         this.listarCarros()
                     })
                     .catch((err) => {

@@ -11,6 +11,7 @@ function load (component) {
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
   routes: [
     { path: '/', name: 'MainContent', component: load('MainContent') },
     { path: '/painel', name: 'Painel', component: load('Painel') },

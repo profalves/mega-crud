@@ -1,6 +1,6 @@
 <template>
 <div id="main">
-    <a class="fixo button is-link is-inverted is-large is-loading" v-show="isLoading">Loading</a>
+    <a class="fixo button is-info is-large is-loading" v-show="isLoading">Loading</a>
     <div class="topo">
         <span style="font-size:30px;
                      cursor:pointer;
