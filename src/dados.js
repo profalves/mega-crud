@@ -1,6 +1,6 @@
 let servico = {
     idCarro: '',
-    idTipoServico: '',
+    idServicoTipo: '',
     valor: 0.00,
     dataVcto: '',
     dataPgto: '',
@@ -55,7 +55,7 @@ let Cor = {
 
 let Carro = {
     modelo: '',
-    idPessoaDono: '',
+    idPessoaDono: 1,
     idCor: '',
     idMarca: '',
     qtdPortas: '',
@@ -67,8 +67,8 @@ let Carro = {
     ar: '',
     valorCusto: '',
     valorVenda: '',
-    idUsuario: '',
-    excluido: '',
+    idUsuario: 1,
+    excluido: false,
 }
 
 

@@ -7,7 +7,7 @@
         </div>
 
         <footer>
-            @Mega Company 2018.
+            @Company Mega 2018.
         </footer>    
             
     </div>

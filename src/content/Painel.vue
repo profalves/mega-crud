@@ -238,8 +238,8 @@
             <div class="column">
               <label class="label">Tipo de Serviço</label>
               <div class="select">
-                  <select v-model="servico.idTipoServico">
-                      <option v-for="serv in servs" :value="serv.idTipoServico">
+                  <select v-model="servico.idServicoTipo">
+                      <option v-for="serv in servs" :value="serv.idServicoTipo">
                         {{ serv.nome }}
                       </option>
                   </select>
@@ -442,10 +442,13 @@
       },
       //Carro  
       salvarCarro(){
+        this.carro.idUsuario = this.idUsuario
         axios.post(ENDPOINT + 'carros/insert', this.carro)
         .then((response) => {
-            console.log(response)
+            console.log('salvarCarro', response)
             this.showModalNew = false
+            this.carro = carro
+            this.listarCarros()
         })
         .catch((err) => {
             //this.showModalNew = false
@@ -494,7 +497,7 @@
                   return false; 
                  }
                  else{
-                  axios.get(ENDPOINT + 'carros/excluir?IdCarro=' + carro.idCarro)
+                  axios.post(ENDPOINT + 'carros/excluir?IdCarro=' + carro.idCarro)
                     .then((response) => {
                         console.log(response)
                         this.listarCarros()

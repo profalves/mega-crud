@@ -31,7 +31,7 @@
                 <td>{{servico.dataPgto | formatDate}}</td>
                 <td>{{servico.valor |formatMoney}}</td>
                 <td class="is-icon">
-                  <a class="button is-danger is-inverted" @click.prevent="removerCompromisso(compromisso)">
+                  <a class="button is-danger is-inverted" @click.prevent="excluirServico(servico)">
                     <i class="fa fa-trash"></i>
                   </a>
                 </td>
@@ -61,8 +61,8 @@
             <div class="column">
               <label class="label">Tipo de Serviço</label>
               <div class="select">
-                  <select v-model="servico.idTipoServico">
-                      <option v-for="servico in tipos" :value="servico.idTipoServico">
+                  <select v-model="servico.idServicoTipo">
+                      <option v-for="servico in tipos" :value="servico.idServicoTipo">
                         {{ servico.nome }}
                       </option>
                   </select>
@@ -236,7 +236,35 @@
             console.error(err);
         });
       },
-      
+      excluirServico(servico){
+        let self = this;
+        swal({ title: `Você tem certeza que deseja apagar este serviço?`,
+             text: `Esta ação é irreversível!`,   
+             type: "warning",   
+             showCancelButton: true,   
+             confirmButtonColor: "#DD6B55",   
+             cancelButtonText: "Cancelar",
+             confirmButtonText: "Sim, pode apagar!", 
+             showLoaderOnConfirm: true,  
+             closeOnCancel: true })
+             .then((value) => {
+                 if(!value) {
+                  return false; 
+                 }
+                 else{                
+                  axios.post(ENDPOINT + 'carros/excluirServ?IdServico=' + servico.idServico)
+                    .then((response) => {
+                        console.log(response)
+                        this.obterServicos()
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                    });
+                }
+             })
+          
+      },
+
       newCarro(){
         this.selected={}
         this.showModalNew = true;
