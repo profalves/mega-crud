@@ -23,6 +23,7 @@
                    v-model="senha" 
                    id="senha"
                    @click="message=''"
+                   @keyup.enter="Login()"
                    ><br><br>
             
             <!--<label class="checkbox" id="conectado">
@@ -46,7 +47,7 @@
 </template>
 
 <script>
-
+import axios from 'axios'
 const ENDPOINT = 'http://www.companymega.com.br/api/'
 
 export default {
@@ -64,13 +65,30 @@ export default {
     },
     methods: {
       Login(){
-          if(this.usuario === 'admin' && this.senha == 1){
-              this.$router.push({ path: '/'})
-              //localStorage.setItem('idUser', 1)
+          this.isLoading = true
+          axios.get(ENDPOINT + 'usuario/obterUsuario?usuario=' + this.usuario + '&senha=' + this.senha)
+          .then((response) => {
+              this.isLoading = false
+              let iduser = response.data.data.idUsuario
+              console.log('iduser', iduser);
+              if(!iduser) return this.message = 'Usuário ou senha incorretos'
+              sessionStorage.setItem('idUser', iduser)
+              this.$router.push({ path: '/painel'})
+              
+          })
+          .catch((e) => {
+              this.isLoading = false
+              console.log(e)
+              this.message = 'Usuário ou senha incorretos'
+          })
+          
+          /*if(this.usuario === 'admin' && this.senha == 1){
+              this.$router.push({ path: '/painel'})
+              sessionStorage.setItem('idUser', 1)
           }
           else{
               this.message = 'Usuário ou senha incorretos'
-          }
+          }*/
       },
       criaCookie() {
          var expira = new Date();
@@ -78,19 +96,19 @@ export default {
          document.cookie = 'usuario=' + this.usuario+ ';expires=' + expira.toUTCString();
       },
       limparSessao(){
-        var user = localStorage.getItem('userId')
+        var user = sessionStorage.getItem('userId')
         if(user!==null){
-            localStorage.clear();
+            sessionStorage.clear();
         }
          
       },
       manterConectado(){
-        var user = localStorage.getItem('userId')
+        var user = sessionStorage.getItem('userId')
         if(user!==null){
-            var c = localStorage.getItem('conectado')
+            var c = sessionStorage.getItem('conectado')
             if(c == 'true'){
-                this.usuario = localStorage.getItem('name')
-                this.senha = localStorage.getItem('token')
+                this.usuario = sessionStorage.getItem('name')
+                this.senha = sessionStorage.getItem('token')
                 this.Login()
             }
         }
@@ -100,7 +118,7 @@ export default {
     created(){
         let t = this
         //t.limparSessao()
-        localStorage.removeItem('idUser')
+        sessionStorage.removeItem('idUser')
     }
     
 }

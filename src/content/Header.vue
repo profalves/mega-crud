@@ -15,8 +15,8 @@
           <a href="javascript:void(0)" class="closebtn" @click="closeNav()">&times;</a>
           <router-link :to="{path: '/'}"><i class="fa fa-flag linkIcon"></i>Inicio</router-link>
           <router-link :to="{path: '/painel'}"><i class="fa fa-comment linkIcon"></i>Anuncios</router-link>
-          <router-link :to="{path: '/servicos'}"><i class="fa fa-wrench linkIcon"></i>Serviços</router-link>
-          <router-link :to="{path: '/login'}"><i class="fa fa-sign-out linkIcon"></i>Sair</router-link>
+          <router-link :to="{path: '/login'}"><i class="fa fa-wrench linkIcon"></i>Logout</router-link>
+          <router-link :to="{path: '/'}"><i class="fa fa-sign-out linkIcon"></i>Sair</router-link>
           
           <div class="version">Mega Company</div>
         </div>
@@ -33,10 +33,6 @@
       }
     },
     methods: {
-        verificarUsuario(){
-            let u = localStorage.getItem('idUser')
-            if(!u) return this.$router.go({path: '/login'})
-        },
         openNav() {
          document.getElementById("mySidenav").style.width = "250px";
         },

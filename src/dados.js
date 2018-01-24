@@ -1,4 +1,5 @@
 let servico = {
+    idCarro: '',
     idTipoServico: '',
     valor: 0.00,
     dataVcto: '',
@@ -53,21 +54,21 @@ let Cor = {
 }
 
 let Carro = {
-    Modelo: '',
-    IdPessoaDono: '',
-    IdCor: '',
-    IdMarca: '',
-    QtdPortas: '',
-    KM: '',
-    Ano: '',
-    IdTipoCombustivel: '',
-    IdTipoDirecao: '',
-    Vidro: '',
-    Ar: '',
+    modelo: '',
+    idPessoaDono: '',
+    idCor: '',
+    idMarca: '',
+    qtdPortas: '',
+    km: '',
+    ano: '',
+    idTipoCombustivel: '',
+    idTipoDirecao: '',
+    vidro: '',
+    ar: '',
     valorCusto: '',
-    ValorVenda: '',
-    IdUsuario: '',
-    Excluido: '',
+    valorVenda: '',
+    idUsuario: '',
+    excluido: '',
 }
 
 

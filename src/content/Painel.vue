@@ -4,14 +4,12 @@
   <a class="fixo button is-inverted is-large is-info is-loading" v-show="isLoading">Loading</a>
   <div>
     <h1 class="title">{{title}}</h1>
-    <div class="columns is-mobile is-2-tablet is-1-desktop">
-      <div class="column is-6-mobile">
-        <router-link class=button to="/">Voltar</router-link>
-      </div>
-      <div class="column is-6-mobile is-2-tablet is-1-desktop">
+    <div class="columns is-mobile">
+      <div class="column">
         <a class="button is-info" @click.prevent="newCarro">Novo Produto</a>
       </div>
     </div>
+    
     <div class="columns">
       <div class="column is-12" id="table">
         <table class="table is-narrow is-bordered is-mobile is-responsive">
@@ -23,35 +21,30 @@
                 <th>Preço</th>
                 <th>Editar</th>
                 <th>Excluir</th>
-                <th colspan="2">Serviços</th>
+                <th>Serviços</th>
                 <!--<th>Imagens</th>-->
 
             </thead>
             <tbody>
               <tr v-for="carro in carros">
                 <td>{{carro.idCarro}}</td>
-                <td><a>{{carro.Modelo}}</a></td>
-                <td>{{carro.Marca}}</td>
-                <td>{{carro.Cor}}</td>
-                <td>{{carro.valorVenda}}</td>
-                <td class="is-icon">
-                  <a class="button is-info is-inverted" @click.prevent="editarCarro(carro)">
+                <td><strong>{{carro.modelo}}</strong></td>
+                <td>{{carro.marca}}</td>
+                <td>{{carro.cor}}</td>
+                <td>{{carro.valorVenda | formatMoney}}</td>
+                <td class="is-icon center">
+                  <a class="button is-info is-inverted" @click.prevent="editarCarro(carro = carro)">
                     <i class="fa fa-edit"></i>
                   </a>
                 </td>
-                <td class="is-icon">
+                <td class="is-icon center">
                   <a class="button is-danger is-inverted" @click.prevent="excluirCarro(carro)">
                     <i class="fa fa-trash"></i>
                   </a>
                 </td>
-                <td>
-                  <a to="/servicos">
+                <td class="is-icon center">
+                  <a @click="abrirServicos(carro)">
                     <i class="fa fa-eye"></i>
-                  </a>
-                </td>
-                <td>
-                  <a @click="showModalSvc=true">
-                    <i class="fa fa-plus"></i>
                   </a>
                 </td>
                 <!--<td><a>Galeria</a></td>-->
@@ -79,7 +72,7 @@
               <div class="column">
                   <label class="label">Modelo</label>
                   <p class="control">
-                    <input class="input" v-model="carro.Modelo">
+                    <input class="input" v-model="carro.modelo">
                   </p>
               </div>
           
@@ -89,7 +82,7 @@
             <div class="column">
               <label class="label">Cor</label>
               <div class="select">
-                  <select v-model="carro.IdCor">
+                  <select v-model="carro.idCor">
                       <option v-for="cor in cores" :value="cor.idCor">
                         {{ cor.nome }}
                       </option>
@@ -109,7 +102,7 @@
             <div class="column">
               <label class="label">Marca</label>
               <div class="select">
-                  <select v-model="carro.IdMarca">
+                  <select v-model="carro.idMarca">
                       <option v-for="marca in marcas" :value="marca.idMarca">
                         {{ marca.nome }}
                       </option>
@@ -130,19 +123,19 @@
               <div class="column">
                   <label class="label">Qtd portas</label>
                   <p class="control">
-                    <input class="input" v-model="carro.QtdPortas">
+                    <input class="input" type="number" v-model="carro.qtdPortas">
                   </p>
               </div>
               <div class="column">
                   <label class="label">KM</label>
                   <p class="control">
-                    <input class="input" v-model="carro.KM">
+                    <input class="input" type="number" v-model="carro.km">
                   </p>
               </div>
               <div class="column">
                   <label class="label">Ano</label>
                   <p class="control">
-                    <input class="input" v-model="carro.Ano">
+                    <input class="input" type="number" v-model="carro.ano">
                   </p>
               </div>
           
@@ -152,7 +145,7 @@
             <div class="column">
               <label class="label">Tipo Combustível</label>
               <div class="select">
-                  <select v-model="carro.IdTipoCombustivel">
+                  <select v-model="carro.idTipoCombustivel">
                       <option v-for="c in combs" :value="c.idTipoCombustivel">
                         {{ c.nome }}
                       </option>
@@ -162,7 +155,7 @@
             <div class="column">
               <label class="label">Tipo Direção</label>
               <div class="select">
-                  <select v-model="carro.IdTipoDirecao">
+                  <select v-model="carro.idTipoDirecao">
                       <option v-for="d in dirs" :value="d.idTipoDirecao">
                         {{ d.nome }}
                       </option>
@@ -178,11 +171,11 @@
               <div class="field">
                   <div class="control">
                     <label class="radio">
-                      <input type="radio" value="true" v-model="carro.Vidro">
+                      <input type="radio" value="true" v-model="carro.vidro">
                       Sim
                     </label>
                     <label class="radio">
-                      <input type="radio" value="false" v-model="carro.Vidro">
+                      <input type="radio" value="false" v-model="carro.vidro">
                       Não
                     </label>
                   </div>
@@ -197,11 +190,11 @@
               <div class="field">
                   <div class="control">
                     <label class="radio">
-                      <input type="radio" value="true" v-model="carro.Ar">
+                      <input type="radio" value="true" v-model="carro.ar">
                       Sim
                     </label>
                     <label class="radio">
-                      <input type="radio" value="false" v-model="carro.Ar">
+                      <input type="radio" value="false" v-model="carro.ar">
                       Não
                     </label>
                   </div>
@@ -212,20 +205,21 @@
               <div class="column">
                   <label class="label">Valor custo</label>
                   <p class="control">
-                    <input class="input" v-model="carro.valorCusto">
+                    <input class="input" type="number" v-model="carro.valorCusto">
                   </p>
               </div>
               <div class="column">
                   <label class="label">Valor venda</label>
                   <p class="control">
-                    <input class="input" v-model="carro.ValorVenda">
+                    <input class="input" type="number" v-model="carro.valorVenda">
                   </p>
               </div>
           </div>
         </section>
         
         <footer class="modal-card-foot">
-          <a class="button is-info" @click.prevent="salvarCarro">Salvar</a>
+          <a class="button is-info" @click.prevent="update" v-if="search">Editar</a>
+          <a class="button is-info" @click.prevent="salvarCarro" v-else>Salvar</a>
           <a class="button" @click.prevent="showModalNew=false">Cancelar e Retornar</a>
         </footer>
       </div>
@@ -308,7 +302,7 @@
           
         <footer class="modal-card-foot">
           <a class="button is-danger" @click.prevent="showModalCor=false">Cancelar</a>
-          <a class="button is-success" @click.prevent="salvarCompromisso">Salvar</a>
+          <a class="button is-success" @click.prevent="salvarCor">Salvar</a>
         </footer>
       </div>
     </div>
@@ -329,7 +323,7 @@
           
         <footer class="modal-card-foot">
           <a class="button is-danger" @click.prevent="showModalCor=false">Cancelar</a>
-          <a class="button is-success" @click.prevent="salvarCompromisso">Salvar</a>
+          <a class="button is-success" @click.prevent="salvarMarca">Salvar</a>
         </footer>
       </div>
     </div>
@@ -354,6 +348,7 @@
     data () {
       return {
         isLoading: false,
+        search: '',
         title: 'Manutenção de Anúncios',
         carro,
         servico,
@@ -370,16 +365,26 @@
         currentTime: moment().format('L'),
         marca: '',
         cor: '',
-        idUsuario: parseInt(localStorage.getItem('idUser')),
+        idUsuario: parseInt(sessionStorage.getItem('idUser')),
       }
     },
     methods: {
       //listar
-      obterCarros(){
-        axios.get(ENDPOINT + 'carros/obterCarro')
+      listarCarros(){
+        axios.get(ENDPOINT + 'carros/obteranuncios' + this.search)
         .then((response) => {
-            console.log(response)
+            //console.log(response)
             this.carros = response.data.data
+        })
+        .catch((err) => { 
+            console.error(err); 
+        });
+      },
+      obterCarro(){
+        axios.get(ENDPOINT + 'carros/obterCarro?idcarro=' + this.search)
+        .then((response) => {
+            console.log('carro:', response)
+            this.carro = response.data.data
         })
         .catch((err) => { 
             console.error(err); 
@@ -388,7 +393,7 @@
       obterMarcas(){
         axios.get(ENDPOINT + 'tipos/obterMarcas')
         .then((response) => {
-            console.log(response)
+            //console.log(response)
             this.marcas = response.data.data
         })
         .catch((err) => { 
@@ -398,7 +403,7 @@
       obterCores(){
         axios.get(ENDPOINT + 'tipos/obterCores')
         .then((response) => {
-            console.log(response)
+            //console.log(response)
             this.cores = response.data.data
         })
         .catch((err) => { 
@@ -408,7 +413,7 @@
       obterDirecao(){
         axios.get(ENDPOINT + 'tipos/obterDirecao')
         .then((response) => {
-            console.log(response)
+            //console.log(response)
             this.dirs = response.data.data
         })
         .catch((err) => { 
@@ -418,7 +423,7 @@
       obterCombustivel(){
         axios.get(ENDPOINT + 'tipos/obterCombustivel')
         .then((response) => {
-            console.log(response)
+            //console.log(response)
             this.combs = response.data.data
         })
         .catch((err) => { 
@@ -428,7 +433,7 @@
       obterServicos(){
         axios.get(ENDPOINT + 'tipos/obterServicos')
         .then((response) => {
-            console.log(response)
+            //console.log(response)
             this.servs = response.data.data
         })
         .catch((err) => { 
@@ -437,71 +442,36 @@
       },
       //Carro  
       salvarCarro(){
-        /*axios({
-          method: 'post',
-          url: ENDPOINT + 'carros/insert',
-          data: {
-                    Modelo: 'Corsa',
-                    IdPessoaDono: 1,
-                    IdCor: 3,
-                    IdMarca: 1,
-                    QtdPortas: 4,
-                    KM: 0,
-                    Ano: '',
-                    IdTipoCombustivel: 1,
-                    IdTipoDirecao: 2,
-                    Vidro: true,
-                    Ar: true,
-                    valorCusto: 1.00,
-                    ValorVenda: 30000.00,
-                    IdUsuario: 1,
-                    Excluido: false,
-                }
-        })*/
-        fetch(ENDPOINT + 'carros/insert',
-        {
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            method: "POST",
-            body: {
-                    Modelo: 'Corsa',
-                    IdPessoaDono: 1,
-                    IdCor: 3,
-                    IdMarca: 1,
-                    QtdPortas: 4,
-                    KM: 0,
-                    Ano: '',
-                    IdTipoCombustivel: 1,
-                    IdTipoDirecao: 2,
-                    Vidro: true,
-                    Ar: true,
-                    valorCusto: 1.00,
-                    ValorVenda: 30000.00,
-                    IdUsuario: 1,
-                    Excluido: false,
-                 }
-        })
+        axios.post(ENDPOINT + 'carros/insert', this.carro)
         .then((response) => {
             console.log(response)
             this.showModalNew = false
         })
         .catch((err) => {
-            this.showModalNew = false
+            //this.showModalNew = false
             console.error(err);
         });
       },
       editarCarro(carro){
-          this.carro = carro
-          this.showModalNew = true
+          this.search = carro.idCarro
+          axios.get(ENDPOINT + 'carros/obterCarro?idcarro=' + this.search)
+            .then((response) => {
+                console.log('carro:', response)
+                this.carro = response.data.data
+                this.showModalNew = true
+            })
+            .catch((err) => { 
+                console.error(err); 
+            });
       },
       update(){
         this.showLoading()
         axios.post(ENDPOINT + 'carros/update', this.carro)
         .then((response) => {
             console.log(response)
+            this.this.showModalNew = false
             this.hideLoading()
+            this.listarCarros()
         })
         .catch((err) => {
             this.hideLoading()
@@ -510,55 +480,53 @@
       },
       excluirCarro(carro){
         let self = this;
-        swal({   title: `Você tem certeza que deseja apagar` + carro.Modelo + `?`,
-                 text: `Esta ação é irreversível!`,   
-                 type: "warning",   
-                 showCancelButton: true,   
-                 confirmButtonColor: "#DD6B55",   
-                 cancelButtonText: "Cancelar",
-                 confirmButtonText: "Sim, pode apagar!", 
-                 showLoaderOnConfirm: true,  
-                 closeOnCancel: true }).then( 
-                 function (value) {
-                     if (value === false) {
-                         return false; 
-                     }
-                      else{
-                          axios.get(ENDPOINT + 'carros/excluir?IdCarro=' + carro.idCarro)
-                            .then((response) => {
-                                console.log(response)
-                                this.showModalNew = false
-                            })
-                            .catch((err) => {
-                                this.showModalNew = false
-                                console.error(err);
-                            });
-                      }
-                 })
+        swal({ title: `Você tem certeza que deseja apagar ` + carro.modelo + `?`,
+             text: `Esta ação é irreversível!`,   
+             type: "warning",   
+             showCancelButton: true,   
+             confirmButtonColor: "#DD6B55",   
+             cancelButtonText: "Cancelar",
+             confirmButtonText: "Sim, pode apagar!", 
+             showLoaderOnConfirm: true,  
+             closeOnCancel: true })
+             .then((value) => {
+                 if(!value) {
+                  return false; 
+                 }
+                 else{
+                  axios.get(ENDPOINT + 'carros/excluir?IdCarro=' + carro.idCarro)
+                    .then((response) => {
+                        console.log(response)
+                        this.listarCarros()
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                    });
+                }
+             })
           
       },
       //Serviços
+      abrirServicos(carro){
+        sessionStorage.setItem('idCarro', carro.idCarro)
+        this.$router.push('servicos')
+          
+      },
       salvarServico(){
-        axios({
-          method: 'post',
-          url: ENDPOINT + 'carros/insert',
-          data: {
-                    Modelo: 'Corsa',
-                    IdPessoaDono: 1,
-                    IdCor: 3,
-                    IdMarca: 1,
-                    QtdPortas: 4,
-                    KM: 0,
-                    Ano: '',
-                    IdTipoCombustivel: 1,
-                    IdTipoDirecao: 2,
-                    Vidro: true,
-                    Ar: true,
-                    valorCusto: 1.00,
-                    ValorVenda: 30000.00,
-                    IdUsuario: 1,
-                    Excluido: false,
-                }
+        axios(ENDPOINT + 'carros/insertServico', this.servico)
+        .then((response) => {
+            console.log(response)
+            this.showModalNew = false
+        })
+        .catch((err) => {
+            this.showModalNew = false
+            console.error(err);
+        });
+      },
+      salvarTipo(){
+        axios.post(ENDPOINT + 'tipos/insertServico', {
+            nome: this.tipo,
+            IdUsuario: 1
         })
         .then((response) => {
             console.log(response)
@@ -569,7 +537,39 @@
             console.error(err);
         });
       },
-      
+      //Cor
+      salvarCor(){
+        axios.post(ENDPOINT + 'tipos/insertCor', {
+            nome: this.cor,
+            IdUsuario: sessionStorage.getItem('idUser')
+        })
+        .then((response) => {
+            console.log(response)
+            this.obterCores()
+            this.showModalCor = false
+        })
+        .catch((err) => {
+            //this.showModalNew = false
+            console.error(err);
+        });
+      },
+      //Marca
+      salvarMarca(){
+        axios.post(ENDPOINT + 'tipos/insertMarca', {
+            nome: this.marca,
+            IdUsuario: sessionStorage.getItem('idUser')
+        })
+        .then((response) => {
+            console.log(response)
+            this.obterMarcas()
+            this.showModalMarca = false
+        })
+        .catch((err) => {
+            //this.showModalNew = false
+            console.error(err);
+        });
+      },
+      //outros
       validar() {
         if (this.selected.tipo==null || this.selected.tipo=='') {
           swal(
@@ -627,17 +627,24 @@
       newMarca(){
         this.showModalMarca = true;
       },
+      verificarUsuario(){
+        let u = sessionStorage.getItem('idUser')
+        if(!u){
+            return this.$router.go('login')
+        }
+      },
       
     },
     created(){
       let t = this
-      t.obterCarros()
+      t.listarCarros()
       t.obterMarcas()
       t.obterCores()
       t.obterDirecao()
       t.obterCombustivel()
       t.obterServicos()
       t.loadCarros()
+      //t.verificarUsuario()
     },
   }
 </script>

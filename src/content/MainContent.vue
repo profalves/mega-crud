@@ -1,23 +1,32 @@
 <template>
 <div id="main">
-    <app-header></app-header>
-
-    <div class="box">
-        <a class="button is-primary is-inverted"><div class="title">{{title}}</div></a>
-        <div class="columns">
-            <div class="column dados">
-                <strong>Ano:</strong> 2011
-                <strong>KM:</strong> 172000
-                <strong>Portas:</strong> 4
-            </div>
-            <div class="column valor">
-                R$ 30.000,00
-            </div>
-        </div>
-        
+    <a class="fixo button is-link is-inverted is-large is-loading" v-show="isLoading">Loading</a>
+    <div class="topo">
+        <span style="font-size:30px;
+                     cursor:pointer;
+                     text-align:left;
+                     padding: 50px">
+        </span>
     </div>
     
-    
+    <div v-for="(box, index) in anuncios" :key="index">
+        <div class="box">
+            <a class="button is-primary is-inverted title"
+               @click="mgr(box)">{{box.modelo}}
+            </a>
+            <div class="columns">
+                <div class="column dados">
+                    <strong>Ano:</strong> {{box.ano}}
+                    <strong>KM:</strong> {{box.km}}
+                    <strong>Portas:</strong> {{box.qtdPortas}}
+                </div>
+                <div class="column valor">
+                    {{box.valorVenda | formatMoney}}
+                </div>
+            </div>
+        </div>
+        <br>
+    </div>
     
 </div> 
 </template>
@@ -34,22 +43,30 @@ export default{
   data () { 
     return {
       title: 'Peugeot',
-      message: 'Bem vindo',
-      carros: []
+      anuncios: 'Bem vindo',
+      carros: [],
+      isLoading: false
     }
   },
   methods: {
     obterCarros(){
-      axios.get(ENDPOINT + 'carros/obtercarro')
+      this.isLoading = true
+      axios.get(ENDPOINT + 'carros/obteranuncios')
       .then((response) => {
         console.log(response)
-        this.message = response.data.data
+        this.anuncios = response.data.data
+        this.isLoading = false
       })
       .catch((err) => { 
-        console.error(err); 
+        console.error(err);
+        this.isLoading = false
       });
     },
-    
+    mgr(box){
+        //console.log(box.idCarro)
+        sessionStorage.setItem('idCarro', box.idCarro)
+        
+    }
   },
   mounted(){
     this.obterCarros()
@@ -63,7 +80,7 @@ export default{
         margin-bottom: 20px;
     }
     .dados{
-        margin-left: 10px;
+        margin-left: 20px;
     }
     .valor{
         color: darkblue;

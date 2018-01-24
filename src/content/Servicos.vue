@@ -6,7 +6,7 @@
     <h1 class="title">{{title}}</h1>
     <div class="columns is-mobile is-2-tablet is-1-desktop">
       <div class="column is-6-mobile">
-        <router-link class="button" to="/">Voltar</router-link>
+        <router-link class="button" to="/painel">Voltar</router-link>
       </div>
 
       <div class="column is-6-mobile is-2-tablet is-1-desktop">
@@ -25,11 +25,11 @@
 
             </thead>
             <tbody>
-              <tr>
-                <td></td>
-                <td><a></a></td>
-                <td></td>
-                <td></td>
+              <tr v-for="servico in servicos">
+                <td>{{servico.tipoServico}}</td>
+                <td>{{servico.dataVcto | formatDate}}</td>
+                <td>{{servico.dataPgto | formatDate}}</td>
+                <td>{{servico.valor |formatMoney}}</td>
                 <td class="is-icon">
                   <a class="button is-danger is-inverted" @click.prevent="removerCompromisso(compromisso)">
                     <i class="fa fa-trash"></i>
@@ -48,7 +48,7 @@
     <!--MODALS-->
     
     <!-- serviços -->
-    <div id="modal_compromisso" class="modal" :class="{'is-active':showModalSvc}">
+    <div id="modal_compromisso" class="modal" :class="{'is-active':showModalSvc}" style="width: 100%">
       <div class="modal-background"></div>
       <div class="modal-card">
         <header class="modal-card-head">
@@ -62,7 +62,7 @@
               <label class="label">Tipo de Serviço</label>
               <div class="select">
                   <select v-model="servico.idTipoServico">
-                      <option v-for="servico in servicos" :value="servico.idTipoServico">
+                      <option v-for="servico in tipos" :value="servico.idTipoServico">
                         {{ servico.nome }}
                       </option>
                   </select>
@@ -83,34 +83,39 @@
                   <label class="label">Valor</label>
                   <p class="control">
                     <input class="input"
+                           type="number"
                            v-model="servico.valor" />
                   </p>
               </div>
               <div class="column">
                   <label class="label">Vencimento</label>
-                  <div class="select">
-                      <!--<date-picker :date="startTime" :option="option" :limit="limit"></date-picker>-->
+                  <div class="input" style="z-index: 5">
+                      <datepicker language="pt-br"
+                                  v-model="dataVcto"
+                                  ></datepicker>
                   </div>
               </div>
               <div class="column">
                   <label class="label">Pagamento</label>
-                  <div class="select">
-                      <!--<date-picker :date="endtime" :option="option" :limit="limit"></date-picker>-->
+                  <div class="input">
+                      <datepicker language="pt-br"
+                                  v-model="dataPgto"
+                                  ></datepicker>
                   </div>
               </div>
           
           </div>
-          
+          <div style="margin-bottom: 200px"></div>
         </section>
         
         <footer class="modal-card-foot">
-          <a class="button is-primary" @click.prevent="">Salvar</a>
+          <a class="button is-primary" @click.prevent="salvarServico">Salvar</a>
           <a class="button" @click.prevent="showModalSvc=false">Cancelar e Retornar</a>
         </footer>
       </div>
     </div>
     
-    <!--adicionar -->
+    <!--adicionar tipo-->
     <div id="modal_compromisso" class="modal" :class="{'is-active':showModalTipo}">
       <div class="modal-background"></div>
       <div class="modal-card">
@@ -136,7 +141,7 @@
 
 <script>
   import axios from 'axios'
-  //import myDatepicker from 'vue-datepicker'
+  import Datepicker from 'vuejs-datepicker';
   //import {Money} from 'v-money'
   import s from '../dados.js'
   const servico = s.servico
@@ -153,6 +158,7 @@
       return {
         isLoading: false,
         title: 'Serviços',
+        search: sessionStorage.getItem('idCarro'),
         servicos: [],
         servico,
         showModalTipo: false,
@@ -161,67 +167,8 @@
         tipo: '',
         tipos: [],
         errors: [],
-        
-          
-        // datapicker
-        startTime: {
-            time: ''
-        },
-        endtime: {
-            time: ''
-        },
-        option: {
-            type: 'day',
-            week: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'],
-            month: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-            format: 'YYYY-MM-DD' + moment().format('THH:mm'),
-            placeholder: 'Insira a data',
-            inputStyle: {
-              'display': 'inline-block',
-              'padding': '5px',
-              'line-height': '18px',
-              'font-size': '16px',
-              'border': '2px solid #fff',
-              'box-shadow': '0 1px 3px 0 rgba(0, 0, 0, 0.2)',
-              'border-radius': '2px',
-              'color': '#5F5F5F',
-              'margin-bottom': '5px',
-              'width': '180px'
-        },
-        color: {
-          header: '#000',
-          headerText: '#fff'
-        },
-        buttons: {
-          ok: 'Ok',
-          cancel: 'Cancel'
-        },
-        overlayOpacity: 0.5, // 0.5 as default
-        dismissible: true // as true as default
-        },
-        timeoption: {
-          type: 'time',
-          week: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'],
-          month: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-          format: 'YYYY-MM-DDTHH:mm'
-        },
-        multiOption: {
-          type: 'multi-day',
-          week: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'],
-          month: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-          format: 'YYYY-MM-DDTHH:mm'
-        },
-        limit: [
-            {
-              type: '', // preencher com 'weekday' para impor limite no calendário e ocultar dom/sab
-              available: [1, 2, 3, 4, 5, 6] //define o limite de dias uteis - [6] inclui o sábado no calendário  
-            },
-            { // sem uso no momento
-              type: 'fromto',
-              from: '',
-              to: ''
-            }
-        ],
+        dataVcto: '',
+        dataPgto: '',
           
         //v-money
         money: {
@@ -234,62 +181,22 @@
         }
       }
     },
-    /*components: {
-        'date-picker': myDatepicker,
+    components: {
+        'datepicker': Datepicker,
         //Money
-    },*/
-    methods: {  
-      obterCarros(){
-        axios.get(ENDPOINT + 'carros/obterCarro')
-        .then((response) => {
-            console.log(response)
-            this.carros = response.data.data
-        })
-        .catch((err) => { 
-            console.error(err); 
-        });
-      },
-      obterMarcas(){
-        axios.get(ENDPOINT + 'tipos/obterMarcas')
-        .then((response) => {
-            console.log(response)
-            this.marcas = response.data.data
-        })
-        .catch((err) => { 
-            console.error(err); 
-        });
-      },
-      obterCores(){
-        axios.get(ENDPOINT + 'tipos/obterCores')
-        .then((response) => {
-            console.log(response)
-            this.cores = response.data.data
-        })
-        .catch((err) => { 
-            console.error(err); 
-        });
-      },
-      obterDirecao(){
-        axios.get(ENDPOINT + 'tipos/obterDirecao')
-        .then((response) => {
-            console.log(response)
-            this.dirs = response.data.data
-        })
-        .catch((err) => { 
-            console.error(err); 
-        });
-      },
-      obterCombustivel(){
-        axios.get(ENDPOINT + 'tipos/obterCombustivel')
-        .then((response) => {
-            console.log(response)
-            this.combs = response.data.data
-        })
-        .catch((err) => { 
-            console.error(err); 
-        });
-      },
+    },
+    methods: {
       obterServicos(){
+        axios.get(ENDPOINT + 'carros/obterServicos?IdCarro=' + sessionStorage.getItem('idCarro'))
+        .then((response) => {
+            console.log(response)
+            this.servicos = response.data.data
+        })
+        .catch((err) => { 
+            console.error(err); 
+        });
+      },
+      tipoServicos(){
         axios.get(ENDPOINT + 'tipos/obterServicos')
         .then((response) => {
             console.log(response)
@@ -300,27 +207,32 @@
         });
       },
       salvarServico(){
-        axios(ENDPOINT + 'tipos/insertServico', this.servico)
+        this.servico.idCarro = sessionStorage.getItem('idCarro')
+        this.servico.dataVcto = new Date(this.dataVcto).toISOString()
+        this.servico.dataPgto = new Date(this.dataPgto).toISOString()
+        axios.post(ENDPOINT + 'carros/insertServico', this.servico)
         .then((response) => {
-            console.log(response)
-            this.showModalNew = false
+            console.log('SALVAR SERVIÇO', response)
+            this.showModalSvc = false
+            this.obterServicos()
         })
         .catch((err) => {
-            this.showModalNew = false
+            this.showModalSvc = false
             console.error(err);
         });
       },
       salvarTipo(){
         axios.post(ENDPOINT + 'tipos/insertServico', {
             nome: this.tipo,
-            IdUsuario: 1
+            idUsuario: sessionStorage.getItem('idUser')
         })
         .then((response) => {
-            console.log(response)
-            this.showModalNew = false
+            console.log('SALVAR TIPO', response)
+            this.showModalTipo = false
+            this.tipoServicos()
         })
         .catch((err) => {
-            this.showModalNew = false
+            this.showModalTipo = false
             console.error(err);
         });
       },
@@ -340,6 +252,7 @@
     created(){
       let t = this
       t.obterServicos()
+      t.tipoServicos()
     },
   }
 </script>
@@ -433,6 +346,18 @@ header{
   padding-bottom: 0;
   border-top-width: 0;
   border-bottom-width: 0;
+}
+div.vdp-datepicker__calendar{
+    z-index: 5
+    
+}
+.mdInput {
+    /*margin-top: 10px;
+    width: 90%;*/
+    background:transparent;
+    outline:none;
+    border: 0px;
+    /*border-bottom-color: #D3DAE0;*/
 }
 .fixo{float: right; margin-right: 10px; margin-top: 0px; z-index: 1000;}
 </style>
