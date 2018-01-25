@@ -4,8 +4,8 @@
   <a class="fixo button is-inverted is-large is-info is-loading" v-show="isLoading">Loading</a>
   <div>
     <h1 class="title">{{title}}</h1>
-    <div class="columns is-mobile is-2-tablet is-1-desktop">
-      <div class="column is-6-mobile">
+    <div class="columns">
+      <div class="column is-6-mobile is-2-tablet is-1-desktop">
         <router-link class="button" to="/painel">Voltar</router-link>
       </div>
 
@@ -48,7 +48,7 @@
     <!--MODALS-->
     
     <!-- serviços -->
-    <div id="modal_compromisso" class="modal" :class="{'is-active':showModalSvc}" style="width: 100%">
+    <div id="modal_compromisso" class="modal" :class="{'is-active':showModalSvc}">
       <div class="modal-background"></div>
       <div class="modal-card">
         <header class="modal-card-head">
@@ -56,7 +56,7 @@
           <button class="delete" @click.prevent="showModalSvc=false"></button>
         </header>
         <section class="modal-card-body">
-            
+          
           <div class="columns"> 
             <div class="column">
               <label class="label">Tipo de Serviço</label>
@@ -87,25 +87,30 @@
                            v-model="servico.valor" />
                   </p>
               </div>
+          </div>
+          <div class="columns">
               <div class="column">
                   <label class="label">Vencimento</label>
-                  <div class="input" style="z-index: 5">
+                  <div style="z-index: 5">
                       <datepicker language="pt-br"
                                   v-model="dataVcto"
+                                  :inline="true"
                                   ></datepicker>
                   </div>
               </div>
               <div class="column">
                   <label class="label">Pagamento</label>
-                  <div class="input">
+                  <div>
                       <datepicker language="pt-br"
                                   v-model="dataPgto"
+                                  :inline="true"
                                   ></datepicker>
                   </div>
               </div>
           
           </div>
           <div style="margin-bottom: 200px"></div>
+            
         </section>
         
         <footer class="modal-card-foot">
@@ -238,6 +243,7 @@
       },
       excluirServico(servico){
         let self = this;
+        self.showLoading()
         swal({ title: `Você tem certeza que deseja apagar este serviço?`,
              text: `Esta ação é irreversível!`,   
              type: "warning",   
@@ -252,12 +258,14 @@
                   return false; 
                  }
                  else{                
-                  axios.post(ENDPOINT + 'carros/excluirServ?IdServico=' + servico.idServico)
+                  axios.get(ENDPOINT + 'carros/excluirServ?IdServico=' + servico.idServico)
                     .then((response) => {
+                        self.hideLoading()
                         console.log(response)
                         this.obterServicos()
                     })
                     .catch((err) => {
+                        self.hideLoading()
                         console.error(err);
                     });
                 }
@@ -386,6 +394,10 @@ div.vdp-datepicker__calendar{
     outline:none;
     border: 0px;
     /*border-bottom-color: #D3DAE0;*/
+}
+.card-conteiner{
+    width: 100%;
+    margin: 0 20px;
 }
 .fixo{float: right; margin-right: 10px; margin-top: 0px; z-index: 1000;}
 </style>

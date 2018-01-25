@@ -1,7 +1,7 @@
 ﻿<template>
 <div id="painel">
   <app-header></app-header>
-  <a class="fixo button is-large is-info is-loading" v-show="isLoading">Loading</a>
+  <a class="fixo button is-info is-large is-loading" v-show="isLoading">Loading</a>
   <div>
     <h1 class="title">{{title}}</h1>
     <div class="columns is-mobile">
@@ -322,7 +322,7 @@
         </section>
           
         <footer class="modal-card-foot">
-          <a class="button is-danger" @click.prevent="showModalCor=false">Cancelar</a>
+          <a class="button is-danger" @click.prevent="showModalMarca=false">Cancelar</a>
           <a class="button is-success" @click.prevent="salvarMarca">Salvar</a>
         </footer>
       </div>
@@ -371,13 +371,16 @@
     methods: {
       //listar
       listarCarros(){
+        this.showLoading()
         axios.get(ENDPOINT + 'carros/obteranuncios')
         .then((response) => {
             //console.log(response)
             this.carros = response.data.data
+            this.hideLoading()
         })
         .catch((err) => { 
-            console.error(err); 
+            console.error(err);
+            this.hideLoading()
         });
       },
       obterCarro(){
@@ -554,6 +557,7 @@
         .then((response) => {
             console.log(response)
             this.obterCores()
+            this.cor = ''
             this.showModalCor = false
         })
         .catch((err) => {
@@ -570,6 +574,7 @@
         .then((response) => {
             console.log(response)
             this.obterMarcas()
+            this.marca = ''
             this.showModalMarca = false
         })
         .catch((err) => {
@@ -627,6 +632,7 @@
 
       },
       newCarro(){
+        this.carro = {}
         this.showModalNew = true;
       },
       newCor(){

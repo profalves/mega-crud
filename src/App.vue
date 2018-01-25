@@ -76,5 +76,10 @@ export default {
     .center{
         text-align: center;
     }
-    .fixo{float: right; margin-right: 10px; margin-top: 0px; z-index: 1000;}
+    .fixo{
+        float: right;
+        margin-right: 20px;
+        margin-top: 0px;
+        z-index: 1000;
+    }
 </style>
