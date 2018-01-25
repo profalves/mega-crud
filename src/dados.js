@@ -71,6 +71,7 @@ let Carro = {
     excluido: false,
 }
 
+const api = 'http://www.companymega.com.br/carros/api/'
 
 export default { 
     servico,
@@ -82,4 +83,5 @@ export default {
     Marca,
     Cor,
     Carro,
+    api
 }

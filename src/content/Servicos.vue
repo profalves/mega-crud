@@ -1,7 +1,7 @@
 ﻿<template>
 <div id="servicos">
   <app-header></app-header>
-  <a class="fixo button is-inverted is-large is-info is-loading" v-show="isLoading">Loading</a>
+  <a class="fixo button is-large is-warning is-loading" v-show="isLoading">Loading</a>
   <div>
     <h1 class="title">{{title}}</h1>
     <div class="columns">
@@ -150,12 +150,11 @@
   //import {Money} from 'v-money'
   import s from '../dados.js'
   const servico = s.servico
-    
+  const ENDPOINT = s.api
+  
   let moment = require('moment');
   require("moment/min/locales.min");
   moment.locale('pt-br');
-
-  const ENDPOINT = 'http://www.companymega.com.br/api/'
 
   export default {
     name: 'Servicos',
@@ -243,8 +242,8 @@
       },
       excluirServico(servico){
         let self = this;
-        self.showLoading()
-        swal({ title: `Você tem certeza que deseja apagar este serviço?`,
+        self.isLoading = true     
+          swal({ title: `Você tem certeza que deseja apagar este serviço?`,
              text: `Esta ação é irreversível!`,   
              type: "warning",   
              showCancelButton: true,   
@@ -260,12 +259,12 @@
                  else{                
                   axios.get(ENDPOINT + 'carros/excluirServ?IdServico=' + servico.idServico)
                     .then((response) => {
-                        self.hideLoading()
+                        self.isLoading = false
                         console.log(response)
                         this.obterServicos()
                     })
                     .catch((err) => {
-                        self.hideLoading()
+                        self.isLoading = false
                         console.error(err);
                     });
                 }

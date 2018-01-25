@@ -340,8 +340,7 @@
   import data from '../dados.js'
   const carro = data.Carro
   const servico = data.servico
-
-  const ENDPOINT = 'http://www.companymega.com.br/api/'
+  const ENDPOINT = data.api
 
   export default {
     name: 'Painel-Veiculos',

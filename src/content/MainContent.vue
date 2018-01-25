@@ -36,7 +36,8 @@ var moment = require('moment');
 require("moment/min/locales.min");
 moment.locale('pt-br');
     
-const ENDPOINT = 'http://www.companymega.com.br/api/'
+import data from '../dados.js'
+const ENDPOINT = data.api
 
 export default{
   name: 'Inicio',
