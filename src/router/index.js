@@ -13,10 +13,10 @@ Vue.use(Router)
 export default new Router({
   mode: 'history',
   routes: [
-    { path: '/', name: 'MainContent', component: load('MainContent') },
-    { path: '/painel', name: 'Painel', component: load('Painel') },
-    { path: '/servicos', name: 'Servicos', component: load('Servicos') },
-    { path: '/login', name: 'Login', component: load('Login') },
-    { path: '/hello', name: 'HelloWorld', component: load('HelloWorld') }
+    { path: '/', name: 'mainContent', component: load('MainContent') },
+    { path: '/painel', name: 'painel', component: load('Painel') },
+    { path: '/servicos', name: 'servicos', component: load('Servicos') },
+    { path: '/login', name: 'login', component: load('Login') },
+    { path: '/hello', name: 'hello', component: load('HelloWorld') }
   ]
 })

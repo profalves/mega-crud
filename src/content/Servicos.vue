@@ -1,7 +1,7 @@
 ﻿<template>
 <div id="servicos">
   <app-header></app-header>
-  <a class="fixo button is-large is-warning is-loading" v-show="isLoading">Loading</a>
+  <a class="fixo button is-large is-danger is-loading" v-show="isLoading">Loading</a>
   <div>
     <h1 class="title">{{title}}</h1>
     <div class="columns">
@@ -10,7 +10,7 @@
       </div>
 
       <div class="column is-6-mobile is-2-tablet is-1-desktop">
-        <a class="button is-info" @click.prevent="showModalSvc=true">Novo Serviço</a>
+        <a class="button is-info" @click.prevent="newService">Novo Serviço</a>
       </div>
     </div>
     <div class="columns">
@@ -87,29 +87,38 @@
                            v-model="servico.valor" />
                   </p>
               </div>
-          </div>
-          <div class="columns">
               <div class="column">
                   <label class="label">Vencimento</label>
                   <div style="z-index: 5">
-                      <datepicker language="pt-br"
-                                  v-model="dataVcto"
-                                  :inline="true"
-                                  ></datepicker>
+                      
+                    <input
+                        v-model="dataVcto"
+                        type="text"
+                        class="input"
+                        placeholder="dd/mm/yyyy"
+                        @keyup="maskDV"
+                        @blur="toUTC(dataVcto)"
+                        maxlength="10"
+                    >                      
                   </div>
               </div>
               <div class="column">
                   <label class="label">Pagamento</label>
                   <div>
-                      <datepicker language="pt-br"
-                                  v-model="dataPgto"
-                                  :inline="true"
-                                  ></datepicker>
+                    <input
+                        v-model="dataPgto"
+                        type="text"
+                        class="input"
+                        placeholder="dd/mm/yyyy"
+                        @keyup="maskDP"
+                        @blur="toUTC2(dataPgto)"
+                        maxlength="10"
+                    >   
                   </div>
               </div>
           
           </div>
-          <div style="margin-bottom: 200px"></div>
+          
             
         </section>
         
@@ -152,9 +161,20 @@
   const servico = s.servico
   const ENDPOINT = s.api
   
-  let moment = require('moment');
+  import moment from 'moment'
   require("moment/min/locales.min");
   moment.locale('pt-br');
+    
+  function convertData(value){
+    let c = value
+    let d = c.substring(0,2)
+    let m = c.substring(3,5)
+    let y = c.substring(6,10)
+    let data = new Date(y + '-' + m + '-' + d + 'T00:00:00').toISOString()
+    
+    return data
+  
+  }
 
   export default {
     name: 'Servicos',
@@ -190,6 +210,39 @@
         //Money
     },
     methods: {
+      maskDate(value){
+        let v = value;
+        if (v.match(/^\d{2}$/) !== null) {
+            value = v + '/';
+        } else if (v.match(/^\d{2}\/\d{2}$/) !== null) {
+            value = v + '/';
+        }
+      },
+      maskDV(){
+        let v = this.dataVcto;
+        if (v.match(/^\d{2}$/) !== null) {
+            this.dataVcto = v + '/';
+        } else if (v.match(/^\d{2}\/\d{2}$/) !== null) {
+            this.dataVcto = v + '/';
+        }
+      },
+      maskDP(){
+        let v = this.dataPgto;
+        if (v.match(/^\d{2}$/) !== null) {
+            this.dataPgto = v + '/';
+        } else if (v.match(/^\d{2}\/\d{2}$/) !== null) {
+            this.dataPgto = v + '/';
+        }
+      },
+      toUTC(value){
+        let data = convertData(value)
+        this.servico.dataVcto = data
+        this.servico.dataPgto = data
+      },
+      toUTC2(value){
+        let data = convertData(value)
+        this.servico.dataPgto = data
+      },
       obterServicos(){
         axios.get(ENDPOINT + 'carros/obterServicos?IdCarro=' + sessionStorage.getItem('idCarro'))
         .then((response) => {
@@ -212,8 +265,10 @@
       },
       salvarServico(){
         this.servico.idCarro = sessionStorage.getItem('idCarro')
-        this.servico.dataVcto = new Date(this.dataVcto).toISOString()
-        this.servico.dataPgto = new Date(this.dataPgto).toISOString()
+        if(this.dataPgto === ''){
+            this.servico.dataPgto = this.servico.dataVcto
+        }
+          
         axios.post(ENDPOINT + 'carros/insertServico', this.servico)
         .then((response) => {
             console.log('SALVAR SERVIÇO', response)
@@ -242,7 +297,6 @@
       },
       excluirServico(servico){
         let self = this;
-        self.isLoading = true     
           swal({ title: `Você tem certeza que deseja apagar este serviço?`,
              text: `Esta ação é irreversível!`,   
              type: "warning",   
@@ -256,7 +310,8 @@
                  if(!value) {
                   return false; 
                  }
-                 else{                
+                 else{
+                  self.isLoading = true
                   axios.get(ENDPOINT + 'carros/excluirServ?IdServico=' + servico.idServico)
                     .then((response) => {
                         self.isLoading = false
@@ -272,9 +327,11 @@
           
       },
 
-      newCarro(){
-        this.selected={}
-        this.showModalNew = true;
+      newService(){
+        this.servico = {}
+        this.dataPgto = ''
+        this.dataVcto = ''
+        this.showModalSvc = true
       },
       newCor(){
         this.showModalCor = true;

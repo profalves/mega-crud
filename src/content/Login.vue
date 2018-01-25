@@ -74,7 +74,7 @@ export default {
               console.log('iduser', iduser);
               if(!iduser) return this.message = 'Usuário ou senha incorretos'
               sessionStorage.setItem('idUser', iduser)
-              this.$router.push({ path: '/painel'})
+              this.$router.push('painel')
               
           })
           .catch((e) => {

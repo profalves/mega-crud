@@ -225,67 +225,6 @@
       </div>
     </div>
     
-    <!-- serviços -->
-    <div id="modal_compromisso" class="modal" :class="{'is-active':showModalSvc}">
-      <div class="modal-background"></div>
-      <div class="modal-card">
-        <header class="modal-card-head">
-          <p class="modal-card-title">Serviços</p>
-          <button class="delete" @click.prevent="showModalSvc=false"></button>
-        </header>
-        <section class="modal-card-body">  
-          <div class="columns"> 
-            <div class="column">
-              <label class="label">Tipo de Serviço</label>
-              <div class="select">
-                  <select v-model="servico.idServicoTipo">
-                      <option v-for="serv in servs" :value="serv.idServicoTipo">
-                        {{ serv.nome }}
-                      </option>
-                  </select>
-              </div>
-                
-            </div>
-              
-            <div class="column is-4">
-              <label class="label"></label>
-              <button class="button is-info" id="buttonf" @click="newCor">Adicionar Tipo</button>
-            </div>
-              
-          </div>
-          
-            
-          <div class="columns">
-              <div class="column">
-                  <label class="label">Valor</label>
-                  <p class="control">
-                    <input class="input" v-model="servico.valor">
-                  </p>
-              </div>
-              <div class="column">
-                  <label class="label">Vencimento</label>
-                  <p class="control">
-                    <input class="input" v-model="servico.dataVcto">
-                  </p>
-              </div>
-              <div class="column">
-                  <label class="label">Pagamento</label>
-                  <p class="control">
-                    <input class="input" v-model="servico.dataPgto">
-                  </p>
-              </div>
-          
-          </div>
-          
-        </section>
-        
-        <footer class="modal-card-foot">
-          <a class="button is-primary" @click.prevent="salvarServico">Salvar</a>
-          <a class="button" @click.prevent="showModalNew=false">Cancelar e Retornar</a>
-        </footer>
-      </div>
-    </div>
-    
     <!--adicionar cor-->
     <div id="modal_compromisso" class="modal" :class="{'is-active':showModalCor}">
       <div class="modal-background"></div>
